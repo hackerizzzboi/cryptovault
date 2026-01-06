@@ -9,6 +9,10 @@ from cryptography.hazmat.primitives import padding as sym_padding
 from cryptography.hazmat.backends import default_backend
 from cryptography import x509
 from cryptography.x509.oid import NameOID
+import os
+
+# Check if we're in CI/CD mode
+CI_MODE = os.getenv('CI') == 'true'
 
 # ========== CI/CD VALIDATION ==========
 # This section is for GitHub Actions testing only
@@ -575,13 +579,17 @@ if __name__ == "__main__":
     print("📚 For Softwarica College - ST6051CEM")
     print("=" * 50)
     
-    # CI/CD validation (runs in pipeline, not in GUI)
-    # This helps GitHub Actions validate the cryptography imports
+    # CI/CD validation
     print("🔍 Running CI/CD validation...")
     if validate_cryptography_imports():
         print("✅ CI/CD validation passed!")
-        print("\n🎉 Starting GUI application...")
-        main()
+        
+        # Only run GUI if NOT in CI mode
+        if not CI_MODE:
+            print("\n🎉 Starting GUI application...")
+            main()
+        else:
+            print("\n✅ CI/CD mode detected - GUI skipped")
     else:
         print("❌ CI/CD validation failed!")
         print("Please check your cryptography installation.")
