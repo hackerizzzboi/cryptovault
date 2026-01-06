@@ -1,0 +1,41 @@
+name: CryptoVault CI/CD
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Test imports
+      run: |
+        python -c "
+        print('Testing CryptoVault imports...')
+        try:
+            import tkinter
+            from cryptography.hazmat.primitives import serialization, hashes
+            from cryptography.hazmat.primitives.asymmetric import rsa, ec, padding
+            import json, os, base64, hashlib, secrets
+            from datetime import datetime
+            print('✅ All imports successful!')
+        except Exception as e:
+            print(f'❌ Import error: {e}')
+            exit(1)
+        "
+    
+    - name: Check files
+      run: |
+        echo "Project files:"
+        ls -la
+        echo ""
+        echo "Checking required files:"
+        [ -f "cryptovault.py" ] && echo "✅ cryptovault.py exists" || echo "❌ cryptovault.py missing"
+        [ -f "requirements.txt" ] && echo "✅ requirements.txt exists" || echo "❌ requirements.txt missing"
+        [ -f "README.md" ] && echo "✅ README.md exists" || echo "❌ README.md missing"
